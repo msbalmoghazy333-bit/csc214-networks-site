@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSC214: Computer Networks & Data Communication</title>
+  <style>
+    :root {
+      /* Palette extracted from the reference design */
+      --header-bg: #223042;         /* Deep Navy Slate */
+      --nav-bg: #1a2533;            /* Dark Slate Header Bar */
+      --primary: #c9935a;           /* Warm Sand / Camel Accent */
+      --primary-hover: #b88248;
+      --navy-blue: #2c3e55;         /* Classic Deep Navy */
+      --royal-accent: #3b597c;
+      --bg: #f4f6f8;                /* Soft Eye-Friendly Background */
+      --card-bg: #ffffff;           /* Crisp Card Surface */
+      --text-main: #1f2937;         /* Deep Charcoal for high readability */
+      --text-muted: #64748b;        /* Soft Slate */
+      --border: #e2e8f0;            /* Subtle Border */
+      --tag-bg: #eef2f6;
+      --tag-text: #2c3e55;
+      --correct-bg: #ecfdf5;
+      --correct-border: #10b981;
+      --correct-text: #065f46;
+      --wrong-bg: #fef2f2;
+      --wrong-border: #ef4444;
+      --wrong-text: #991b1b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Cairo", "Segoe UI Arabic", Tahoma, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.75;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--header-bg), #1a2533);
+      color: #ffffff;
+      padding: 2.2rem 1.5rem;
+      text-align: center;
+      border-bottom: 3px solid var(--primary);
+    }
+
+    header h1 {
+      font-size: 2.1rem;
+      color: #ffffff;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      background: var(--nav-bg);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      overflow-x: auto;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    nav button {
+      background: none;
+      border: none;
+      color: #cbd5e1;
+      padding: 1.1rem 1.5rem;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: all 0.25s ease;
+      border-bottom: 3px solid transparent;
+      direction: ltr;
+    }
+
+    nav button:hover {
+      color: #ffffff;
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    nav button.active {
+      color: #ffffff;
+      background-color: var(--header-bg);
+      border-bottom: 3px solid var(--primary);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1.25rem;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 1.75rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    }
+
+    h2 {
+      color: var(--navy-blue);
+      margin-bottom: 1.25rem;
+      font-size: 1.4rem;
+      border-bottom: 2px solid #edf2f7;
+      padding-bottom: 0.6rem;
+    }
+
+    h3 {
+      color: var(--royal-accent);
+      margin: 1.4rem 0 0.6rem 0;
+      font-size: 1.15rem;
+    }
+
+    p, li {
+      color: #334155;
+      font-size: 1rem;
+      margin-bottom: 0.7rem;
+    }
+
+    ul, ol {
+      padding-right: 1.75rem;
+    }
+
+    strong {
+      color: #0f172a;
+    }
+
+    .en-term {
+      color: var(--navy-blue);
+      direction: ltr;
+      display: inline-block;
+      font-weight: 700;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-size: 0.95rem;
+      background: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 0.9rem 1.1rem;
+      text-align: right;
+    }
+
+    th {
+      background: #f1f5f9;
+      color: var(--navy-blue);
+      font-weight: 700;
+    }
+
+    .tag {
+      display: inline-block;
+      background: var(--tag-bg);
+      color: var(--navy-blue);
+      padding: 0.3rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      direction: ltr;
+      border: 1px solid #dbeafe;
+    }
+
+    /* Quiz Container */
+    .quiz-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .score-banner {
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      padding: 0.65rem 1.4rem;
+      border-radius: 8px;
+      font-weight: 700;
+      color: var(--navy-blue);
+      direction: ltr;
+    }
+
+    .question-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 1.75rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.85rem;
+    }
+
+    .question-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #0f172a;
+      margin-bottom: 1.2rem;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 1.2rem;
+      direction: ltr;
+    }
+
+    .option-label {
+      display: flex;
+      align-items: center;
+      padding: 0.85rem 1.2rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      background: #ffffff;
+      transition: all 0.2s ease;
+      color: #1e293b;
+      font-size: 0.98rem;
+      text-align: left;
+    }
+
+    .option-label:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    .option-label input[type="radio"] {
+      margin-right: 0.85rem;
+      accent-color: var(--primary);
+      width: 18px;
+      height: 18px;
+    }
+
+    .btn-submit {
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      padding: 0.7rem 1.6rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.95rem;
+      transition: background 0.2s;
+    }
+
+    .btn-submit:hover {
+      background: var(--primary-hover);
+    }
+
+    .reset-btn {
+      background: var(--navy-blue);
+      color: #ffffff;
+      border: none;
+      padding: 0.65rem 1.3rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .reset-btn:hover {
+      background: #1e293b;
+    }
+
+    .feedback {
+      display: none;
+      padding: 1.1rem 1.4rem;
+      border-radius: 8px;
+      font-size: 0.98rem;
+      margin-top: 1.2rem;
+      line-height: 1.7;
+      text-align: right;
+      direction: rtl;
+    }
+
+    .feedback.correct {
+      background: var(--correct-bg);
+      border: 1px solid var(--correct-border);
+      color: var(--correct-text);
+    }
+
+    .feedback.incorrect {
+      background: var(--wrong-bg);
+      border: 1px solid var(--wrong-border);
+      color: var(--wrong-text);
+    }
+
+    /* Solved Sheets Section */
+    .solution-item {
+      background: #f8fafc;
+      border-right: 4px solid var(--primary);
+      padding: 1.5rem;
+      margin-bottom: 1.75rem;
+      border-radius: 8px 0 0 8px;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      border-left: 1px solid var(--border);
+    }
+
+    .solution-q {
+      font-weight: 700;
+      color: var(--navy-blue);
+      margin-bottom: 0.75rem;
+      font-size: 1.05rem;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .solution-ans {
+      color: #334155;
+      font-size: 0.98rem;
+      line-height: 1.75;
+    }
+
+    .solution-ans strong {
+      color: var(--navy-blue);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>CSC214: Computer Networks & Data Communication</h1>
+  </header>
+
+  <nav>
+    <button class="active" onclick="switchTab('lec1')">Lecture 1: Network Basics & Topologies</button>
+    <button onclick="switchTab('lec2')">Lecture 2: OSI & TCP/IP Models</button>
+    <button onclick="switchTab('lec3')">Lecture 3: Application Layer</button>
+    <button onclick="switchTab('quiz')">Interactive Quiz & Error Diagnostics</button>
+    <button onclick="switchTab('solutions')">Complete Sheets Solutions</button>
+  </nav>
+
+  <div class="container">
+
+    <!-- TAB 1: LECTURE 1 -->
+    <div id="lec1" class="tab-content active">
+      <div class="card">
+        <h2>نظام توزيع الدرجات ومتطلبات النجاح (Course Breakdown)</h2>
+        <p>إجمالي درجات المقرر: <strong>100 درجة</strong>. متطلبات النجاح: الحصول على <strong>60% على الأقل كمجموع كلي (60/100)</strong>، مع شرط إلزامي وهو الحصول على <strong>12/40 على الأقل في الامتحان النهائي</strong>.</p>
+        <table>
+          <tr><th>بند التقييم</th><th>الدرجة</th><th>التفاصيل والتوزيع</th></tr>
+          <tr><td>Midterm Exam</td><td>20 درجة</td><td>20% من المجموع الكلي للمقرر.</td></tr>
+          <tr><td>Coursework (أعمال السنة)</td><td>40 درجة</td><td>موزعة: 10 سكاشن + 10 محاضرات + 10 كويزات + 10 تقارير.</td></tr>
+          <tr><td>Final Exam (الامتحان النهائي)</td><td>40 درجة</td><td>مقسم إلى: 16 درجة الجزء الإلكتروني (Electronic Part) + 24 درجة الورقة التحريرية (Written Paper).</td></tr>
+        </table>
+      </div>
+
+      <div class="card">
+        <h2>1. أساسيات نقل البيانات ومكونات النظام (Data Communications System)</h2>
+        <p><strong>الاتصالات عن بعد (<span class="en-term">Telecommunication</span>):</strong> تعني الاتصال عبر مسافة. و<strong>البيانات (<span class="en-term">Data</span>)</strong> هي المعلومات المتفق على صياغتها بين الأطراف التي تنشئها وتستخدمها. عملية <span class="en-term">Data Communications</span> هي تبادل البيانات بين جهازين عبر وسط نقل مادي.</p>
+        <h3>العناصر الخمسة الأساسية لأي نظام نقل بيانات:</h3>
+        <ul>
+          <li><strong>1. الرسالة (<span class="en-term">Message</span>):</strong> البيانات والمعلومات المراد إرسالها (نصوص، أرقام، صور، صوت، فيديو).</li>
+          <li><strong>2. المرسل (<span class="en-term">Sender</span>):</strong> الجهاز المصدر الذي يقوم بإنشاء وبث الرسالة (كمبيوتر، ورشة عمل، كاميرا فيديو).</li>
+          <li><strong>3. المستقبل (<span class="en-term">Receiver</span>):</strong> الجهاز الهدف الذي يستقبل الرسالة (كمبيوتر، هاتف).</li>
+          <li><strong>4. وسط الإرسال (<span class="en-term">Transmission Medium</span>):</strong> المسار المادي الذي تسلكه الرسالة لتصل من المرسل للمستقبل (كابلات Twisted pair، كابلات Coaxial، ألياف ضوئية، أو موجات فضائية وأقمار صناعية).</li>
+          <li><strong>5. البروتوكول (<span class="en-term">Protocol</span>):</strong> مجموعة القواعد الرسمية التي تحكم وتدير عملية تبادل البيانات وتحدد صيغتها وتوقيتها.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>2. أنماط تدفق البيانات وطرق التوصيل (Data Flow & Connections)</h2>
+        <h3>أنماط تدفق البيانات (<span class="en-term">Data Flow</span>):</h3>
+        <ul>
+          <li><strong>Simplex (أحادي الاتجاه):</strong> التدفق يسير في مسار واحد فقط وبشكل دائم دون رجوع (مثل: لوحة المفاتيح والشاشة، أو كمبيوتر Mainframe إلى شاشة عرض).</li>
+          <li><strong>Half-Duplex (نصف مزدوج):</strong> يمكن لكلا الطرفين الإرسال والاستقبال، ولكن <em>ليس في نفس الوقت</em>، بل بالتناوب (مثل: أجهزة اللاسلكي Walkie-talkies).</li>
+          <li><strong>Full-Duplex (مزدوج كامل):</strong> يمكن لكلا الطرفين الإرسال والاستقبال في نفس اللحظة بالتزامن (مثل: شبكات الهاتف والاتصالات الحديثة).</li>
+        </ul>
+        <h3>أنماط الربط الفيزيائي (<span class="en-term">Type of Connection</span>):</h3>
+        <ul>
+          <li><strong>Point-to-Point:</strong> رابط مخصص ومحجوز بالكامل بين جهازين اثنين فقط دون مشاركة من أحد.</li>
+          <li><strong>Multipoint (أو Multidrop):</strong> خط اتصال واحد مشترك تتصل به وتتقاسمه أكثر من محطتين أو جهازين (مشاركة مكانية أو عبر تقسيم الوقت).</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>3. مقارنة الأجهزة: Hub مقابل Switch مقابل Router</h2>
+        <table>
+          <tr>
+            <th>وجه المقارنة</th>
+            <th>Hub (المجمع)</th>
+            <th>Switch (المحول)</th>
+            <th>Router (الموجه)</th>
+          </tr>
+          <tr><td>طبقة التشغيل (<span class="en-term">OSI Layer</span>)</td><td>Layer 1 (Physical)</td><td>Layer 2 (Data Link)</td><td>Layer 3 (Network)</td></tr>
+          <tr><td>الوظيفة الرئيسية</td><td>يكرر الإشارة ويبثها لجميع المنافذ دون أي فلترة</td><td>يوجه البيانات فقط للمنفذ الموصول به الجهاز الهدف</td><td>يوجه حزم البيانات بين شبكات مختلفة ومتباعدة</td></tr>
+          <tr><td>نوع العنوان المستخدم</td><td>لا يستخدم أي عناوين نهائياً</td><td>عنوان الماك (<span class="en-term">MAC Address</span>)</td><td>عنوان الآي بي (<span class="en-term">IP Address</span>)</td></tr>
+          <tr><td>نطاق التصادم (<span class="en-term">Collision Domain</span>)</td><td>نطاق تصادم واحد مشترك لجميع المنافذ</td><td>نطاق تصادم مستقل لكل منفذ منفصل</td><td>نطاق تصادم مستقل لكل منفذ منفصل</td></tr>
+          <tr><td>نطاق البث (<span class="en-term">Broadcast Domain</span>)</td><td>نطاق بث واحد يشمل الكل</td><td>نطاق بث واحد (أو نطاق لكل شبكة وهمية VLAN)</td><td>يقوم بعزل وتقسيم نطاقات البث</td></tr>
+          <tr><td>نمط الاتصال (<span class="en-term">Duplex Mode</span>)</td><td>Half-Duplex فقط</td><td>يدعم Full-Duplex بالكامل</td><td>يدعم Full-Duplex بالكامل</td></tr>
+          <tr><td>الاستخدام في الشبكات الحديثة</td><td>جهاز قديم وغير مستحب لكثرة التصادمات</td><td>الجهاز الأساسي في بناء الشبكات المحلية (LAN)</td><td>أساسي لربط الشبكات المتعددة والإنترنت</td></tr>
+        </table>
+      </div>
+
+      <div class="card">
+        <h2>4. طوبولوجيا الشبكات (Network Topologies)</h2>
+        <ul>
+          <li><strong>Star Topology:</strong> تتصل جميع الأجهزة بمحول مركزي (<span class="en-term">Managed Switch</span>). <em>المميزات:</em> سهولة التوسع والإدارة وعزل أعطال الأجهزة الفردية. <em>العيوب:</em> انهيار المحول المركزي يعني سقوط الشبكة بالكامل، وتتطلب كابلات أكثر. وهي الطوبولوجيا القياسية للشبكات المحلية.</li>
+          <li><strong>Bus Topology:</strong> تشترك الأجهزة في كابل محوري واحد (<span class="en-term">Single Backbone</span>). <em>المميزات:</em> غير مكلفة وسهلة التركيب. <em>العيوب:</em> انقطاع الكابل المحوري يعطل الشبكة كاملة، وتشترك الأجهزة في نطاق تصادم واحد.</li>
+          <li><strong>Ring Topology:</strong> تتصل الأجهزة في حلقة دائرية مغلقة وتتحرك الإشارة في اتجاه واحد عبر مكررات إشارة (<span class="en-term">Repeaters</span>). <em>المميزات:</em> وصول متساوٍ لجميع الأجهزة دون تصادمات. <em>العيوب:</em> انقطاع أي نقطة في الحلقة يوقف تدفق البيانات في الشبكة كلها.</li>
+          <li><strong>Mesh Topology:</strong> تتصل الأجهزة بمسارات متعددة (توصيل كامل Full Mesh أو جزئي). <em>المميزات:</em> أعلى درجات التكرارية والاحتياطية (<span class="en-term">High Redundancy</span>) وتحمل الأعطال (<span class="en-term">Fault Tolerance</span>). <em>العيوب:</em> تكلفة مرتفعة جداً وتعقيد كبير في الكابلات.</li>
+          <li><strong>Hybrid Topology:</strong> دمج طوبولوجيتين أو أكثر في شبكة واحدة (مثل Star مع Bus). تُستخدم لتوفير المرونة والتوسع للشركات الكبرى.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>5. التصنيف الجغرافي للشبكات وجدران الحماية (Firewalls)</h2>
+        <h3>التصنيف الجغرافي للشبكات:</h3>
+        <ul>
+          <li><strong>LAN (Local Area Network):</strong> تغطي مكتباً أو مبنى أو حرماً جامعياً لمشاركة الموارد محلياً.</li>
+          <li><strong>MAN (Metropolitan Area Network):</strong> تغطي مدينة كاملة أو بلدة وتربط شبكات LAN متعددة.</li>
+          <li><strong>WAN (Wide Area Network):</strong> تغطي مساحات شاسعة كالدول والقارات، وأشهر أمثلتها شبكة الإنترنت.</li>
+        </ul>
+        <h3>أنواع جدران الحماية (<span class="en-term">Firewall Types</span>):</h3>
+        <ul>
+          <li><strong>Packet Filtering Firewall:</strong> تفحص الحزم في الطبقة 3 و 4 بناءً على قائمة تحكم (<span class="en-term">Access Control List - ACL</span>) تقارن IP المرسل والمستقبل وأرقام المنافذ، وتعتبر بسيطة وذات أمان منخفض لأنها لا تفهم سياق الاتصال (Stateless).</li>
+          <li><strong>Stateful Inspection Firewall:</strong> أكثر أماناً؛ حيث تحتفظ بسجل المحادثات النشطة (<span class="en-term">Conversation List</span>) وتتأكد من أن الحزم القادمة هي رد شرعي على طلب تم إنشاؤه مسبقاً.</li>
+          <li><strong>Proxy Firewall:</strong> يعمل كوسيط كامل يعزل العميل عن الخوادم الخارجية ويفحص البيانات قبل تمريرها.</li>
+          <li><strong>Web Application Firewall (WAF):</strong> يعمل في طبقة التطبيقات (Layer 7) لحماية خوادم الويب من خلال فحص بروتوكولات HTTP/HTTPS ضد الهجمات الإلكترونية.</li>
+          <li><strong>Next-Generation Firewall (NGFW):</strong> يقدم فحصاً عميقاً لمحتوى الحزمة (<span class="en-term">Deep Packet Inspection - DPI</span>) وفلترة الروابط (URL Filtering) وأنظمة منع الاختراق (IPS).</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- TAB 2: LECTURE 2 -->
+    <div id="lec2" class="tab-content">
+      <div class="card">
+        <h2>1. نموذج OSI المرجعي (7 Layers)</h2>
+        <p>يقسم نموذج OSI الاتصال إلى 7 طبقات قياسية لمنع تعارض الأجهزة والبرمجيات بين الشركات، وتسهيل الصيانة، والتأكد من أن التعديل في طبقة معينة لا يكسر عمل بقية الطبقات.</p>
+        <table>
+          <tr><th>الطبقة والترتيب</th><th>وحدة البيانات (PDU)</th><th>المسؤوليات والوظائف الأساسية</th></tr>
+          <tr><td>7. Application</td><td>Data</td><td>واجهة البرامج للوصول لخدمات الشبكة (HTTP, FTP, SMTP, DNS).</td></tr>
+          <tr><td>6. Presentation</td><td>Data</td><td>ترجمة تنسيق البيانات (ASCII)، ضغط البيانات، وتشفيرها وفك تشفيرها (SSL/TLS).</td></tr>
+          <tr><td>5. Session</td><td>Data</td><td>إنهاء وإدارة وفتح الجلسات، المصادقة والتحقق، وإدارة أنماط الإرسال (Simplex/Duplex).</td></tr>
+          <tr><td>4. Transport</td><td>Segments</td><td>التوصيل الشامل (End-to-End)، تقطيع البيانات وتجميعها، ضبط التدفق، واكتشاف الأخطاء وتصحيحها (TCP, UDP).</td></tr>
+          <tr><td>3. Network</td><td>Packets</td><td>العنونة المنطقية (IP Addresses) واختيار أفضل مسار (Routing) عبر بروتوكولات مثل RIP و OSPF.</td></tr>
+          <tr><td>2. Data Link</td><td>Frames</td><td>التسليم القفزي (Hop-to-Hop)، العنونة الفيزيائية (MAC Address)، واكتشاف الأخطاء وتأطير البيانات.</td></tr>
+          <tr><td>1. Physical</td><td>Bits</td><td>الخصائص المادية: نوع الكابل وطوله، معدل البتات (Bit rate)، مستويات الجهد الكهربائي، والواجهات.</td></tr>
+        </table>
+      </div>
+
+      <div class="card">
+        <h2>2. عملية التغليف وتفكيك التغليف (Encapsulation & Decapsulation)</h2>
+        <p>عندما يقوم جهاز بإرسال رسالة، تمر البيانات بعملية <strong>التغليف (<span class="en-term">Encapsulation</span>)</strong> من أعلى لأسفل:</p>
+        <ol>
+          <li>تنشئ التطبيقات البيانات في الطبقات العليا (<strong>Data</strong>).</li>
+          <li>تضيف طبقة النقل ترويسة <span class="en-term">TCP Header</span> (تحتوي على أرقام المنافذ والتسلسل) لتنتج شريحة (<strong>Segment</strong>).</li>
+          <li>تضيف طبقة الشبكة ترويسة <span class="en-term">IP Header</span> (عناوين IP للمرسل والمستقبل) لتنتج حزمة (<strong>Packet</strong>).</li>
+          <li>تضيف طبقة ربط البيانات ترويسة <span class="en-term">MAC Header</span> وذيلاً <span class="en-term">Trailer</span> (لكشف الأخطاء) لتنتج إطاراً (<strong>Frame</strong>).</li>
+          <li>تحول الطبقة الفيزيائية الإطار إلى نبضات وإشارات رقمية (<strong>Bits</strong>) لتمر في وسط النقل.</li>
+        </ol>
+        <p>عند وصول الإشارات للطرف الآخر، تتم العملية العكسية (<strong>Decapsulation</strong>) بإزالة الترويسات طبقة تلو الأخرى حتى تصل البيانات الأصلية للتطبيق الهدف.</p>
+      </div>
+
+      <div class="card">
+        <h2>3. طبقة ربط البيانات: العنونة واكتشاف الأخطاء (Data Link Layer)</h2>
+        <p><strong>عنوان الماك (<span class="en-term">MAC Address</span>):</strong> عنوان مادي مكون من 48 بت (48-bit)، يكتب على هيئة 12 خانة بالنظام السداسي عشر (Hexadecimal) مقسمة لأزواج، وهو مدمج داخل كارت الشبكة (<span class="en-term">NIC</span>).</p>
+        <h3>طرق كشف الأخطاء:</h3>
+        <ul>
+          <li><strong>فحص التكافؤ (<span class="en-term">Parity Checking</span>):</strong> يعتمد على عدد الآحاد (1s) في البتات؛ فإذا كان عدد الآحاد زوجياً (<span class="en-term">Even</span>) تكون قيمة بت التكافؤ <strong>0</strong>، وإذا كان فردياً (<span class="en-term">Odd</span>) تكون قيمة بت التكافؤ <strong>1</strong>.</li>
+          <li><strong>المجموع الاختباري (<span class="en-term">Checksum</span>):</strong> جمع مقاطع الإطار وتطبيق المتمم الأحادي (1's complement)، وعند وصول الإطار يُعاد الحساب وإذا كان الناتج أصفاراً يُقبل الإطار دون مشاكل.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>4. المقارنة بين نموذج OSI ونموذج TCP/IP</h2>
+        <p>يدمج نموذج TCP/IP الطبقات الثلاث العليا من OSI (Application, Presentation, Session) في طبقة واحدة تسمى <strong>Application Layer</strong>، ويدمج الطبقتين السفليتين (Data Link, Physical) في طبقة <strong>Network Access</strong>.</p>
+        <table>
+          <tr><th>طبقات نموذج OSI</th><th>طبقات نموذج TCP/IP</th><th>البروتوكولات الشائعة</th></tr>
+          <tr><td>Application + Presentation + Session</td><td>Application Layer</td><td>DNS, HTTP, FTP, TFTP, SMTP, POP, IMAP, Telnet</td></tr>
+          <tr><td>Transport Layer</td><td>Transport Layer</td><td>TCP (موثوق وموجّه للاتصال) و UDP (غير موثوق وبدون اتصال)</td></tr>
+          <tr><td>Network Layer</td><td>Internet Layer</td><td>IP, ICMP, ARP (لإيجاد MAC من IP)، RARP, بروتوكولات التوجيه</td></tr>
+          <tr><td>Data Link + Physical</td><td>Network Access Layer</td><td>Ethernet, Token Ring, Frame Relay, ATM, PPP</td></tr>
+        </table>
+      </div>
+
+      <div class="card">
+        <h2>5. سلوك العناوين المنطقية مقابل الفيزيائية أثناء التنقل</h2>
+        <p><strong>القاعدة المحورية في الشبكات:</strong></p>
+        <ul>
+          <li><strong>عناوين الـ IP (Logical Addresses):</strong> تظل ثابتة تماماً من الجهاز المصدر إلى الجهاز الهدف عبر كل الراوترات (End-to-End Delivery).</li>
+          <li><strong>عناوين الـ MAC (Physical Addresses):</strong> تتغير عند كل قفزة بين جهازين أو راوترين (Hop-to-Hop Delivery) لأنها مخصصة فقط للرابط الفيزيائي المباشر.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- TAB 3: LECTURE 3 -->
+    <div id="lec3" class="tab-content">
+      <div class="card">
+        <h2>1. طبقة التطبيقات ونماذج التشغيل (Client-Server vs P2P)</h2>
+        <p>توفر طبقة التطبيقات واجهة التخاطب بين البرمجيات وشبكة نقل البيانات. ولكي يكتمل الاتصال بنجاح، يجب أن تدعم الأجهزة بروتوكولات متوافقة.</p>
+        <h3>النماذج المعمارية للتشغيل:</h3>
+        <ul>
+          <li><strong>نموذج العميل والخادم (<span class="en-term">Client-Server Model</span>):</strong> الجهاز الذي يطلب المعلومة يسمى عميلاً (<span class="en-term">Client</span>)، والجهاز الذي يخزن الموارد ويرد على الطلب يسمى خادماً (<span class="en-term">Server</span>). الخادم مركزي، والعميل هو واجهة المستخدم المباشرة.</li>
+          <li><strong>شبكات الند للند (<span class="en-term">Peer-to-Peer - P2P</span>):</strong> لا تعتمد على خادم مركزي مخصص؛ فكل جهاز متصل بالشبكة (<span class="en-term">Peer</span>) يعمل كخادم وعميل في نفس الوقت وبحسب كل عملية تبادل. من أشهر برامجها: <strong>BitTorrent, eDonkey, Direct Connect, Freenet</strong>.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>2. بروتوكولات الويب: HTTP و HTTPS</h2>
+        <p>يعمل بروتوكول HTTP عبر المنفذ TCP 80 أو 8080 لتبادل النصوص والصور وملفات الوسائط المتعددة. وحيث إنه غير مشفر، يُستخدم بروتوكول <strong>HTTPS</strong> لحماية وتشفير الاتصالات.</p>
+        <h3>خطوات فتح موقع الويب (مثل $http://www.cisco.com/index.html$):</h3>
+        <ol>
+          <li>يقوم المتصفح بتحليل أجزاء الرابط (URL): البروتوكول (http)، اسم السيرفر (www.cisco.com)، واسم الملف المطلوب (index.html).</li>
+          <li>يستعلم المتصفح من خادم DNS ليحول اسم النطاق إلى عنوان IP رقمي، ثم يرسل رسالة <strong>GET</strong> للسيرفر لطلب الملف.</li>
+          <li>يرسل الخادم استجابة <span class="en-term">HTTP Response</span> برمز الحالة <span class="en-term">200 OK</span> مرفقة بكود الـ HTML.</li>
+          <li>يقوم المتصفح بمعالجة وتنسيق كود HTML وعرض صفحة الويب للمستخدم.</li>
+        </ol>
+        <h3>أنواع رسائل الـ HTTP الأساسية:</h3>
+        <ul>
+          <li><strong>GET:</strong> طلب صفحة أو مورد من خادم الويب.</li>
+          <li><strong>POST:</strong> رفع وإرسال بيانات إلى الخادم (مثل بيانات النماذج والاستمارات Form data).</li>
+          <li><strong>PUT:</strong> رفع أو استبدال ملف أو مورد على الخادم (مثل رفع صورة).</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>3. بروتوكولات البريد الإلكتروني (Email Protocols)</h2>
+        <p>يعتمد البريد على نظام "التخزين والتمرير" (<span class="en-term">Store-and-forward</span>)؛ حيث تخزن الرسائل في قواعد بيانات على خوادم البريد حتى يطلبها العميل.</p>
+        <ul>
+          <li><strong>SMTP (Simple Mail Transfer Protocol):</strong> يُستخدم <strong>حصرياً لإرسال وتمرير البريد</strong> من العميل للخادم أو بين خوادم البريد. يعمل على منفذ <strong>TCP 25</strong>. إذا كان خادم الوجهة غير متاح، يقوم بتعليق الرسائل (<span class="en-term">Spooling</span>) لإرسالها لاحقاً. وتتطلب رسالة SMTP وجود ترويسة (Sender & Recipient) ومحتوى الرسالة (Body).</li>
+          <li><strong>POP / POP3 (Post Office Protocol):</strong> يُستخدم <strong>لتحميل واستقبال البريد</strong> من الخادم للجهاز عبر منفذ <strong>TCP 110</strong>. بمجرد تحميل الرسالة <em>تُحذف تلقائياً من الخادم</em>؛ ولذلك لا يناسب الأعمال التي تتطلب حفظاً احتياطياً مركزياً.</li>
+          <li><strong>IMAP (Internet Message Access Protocol):</strong> يُستخدم أيضاً لاستقبال البريد، ولكنه <em>يُبقي الرسائل الأصلية مخزنة على الخادم</em> ويزامن القراءة والحذف والتعديل بين جميع أجهزة المستخدم المتصلة.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>4. خدمات عنونة الـ IP: DNS و DHCP</h2>
+        <h3>نظام أسماء النطاقات (<span class="en-term">DNS</span>):</h3>
+        <ul>
+          <li>يحول الأسماء المعروفة (FQDN مثل cisco.com) إلى عناوين IP رقمية لتسهيل الحفظ.</li>
+          <li>يعمل على المنفذ <strong>53</strong> عبر بروتوكولي TCP و UDP.</li>
+          <li>هيكلية هرمية: تبدأ من خوادم الجذر (<span class="en-term">Root Domain</span>)، تليها نطاقات المستوى الأعلى (<span class="en-term">TLD</span>) مثل .com للشركات و .org للمنظمات غير الربحية و .au للمواقع الأسترالية، ثم خوادم المستوى الثاني.</li>
+          <li>أداة <strong>nslookup</strong>: أمر بأنظمة التشغيل يتيح الاستعلام اليدوي عن خوادم DNS وفحص ترجمة الأسماء وعناوين السيرفرات.</li>
+        </ul>
+        <h3>بروتوكول التكوين الديناميكي (<span class="en-term">DHCP</span>):</h3>
+        <ul>
+          <li>يمنح الأجهزة إعدادات IP وأقنعة الشبكة والبوابة الافتراضية تلقائياً من مجمع عناوين (<span class="en-term">Pool</span>). يستخدم منافذ UDP: العميل <strong>68</strong> والخادم <strong>67</strong>.</li>
+          <li><strong>مراحل عملية التأجير (DORA):</strong>
+            <ol>
+              <li><strong>DHCPDISCOVER:</strong> يبثها العميل (Broadcast) للبحث عن خادم متاح.</li>
+              <li><strong>DHCPOFFER:</strong> يعرض الخادم عنوان IP وتفاصيل الإعدادات على العميل.</li>
+              <li><strong>DHCPREQUEST:</strong> يطلب العميل قبول العرض المقدم رسمياً.</li>
+              <li><strong>DHCPACK:</strong> يرسل الخادم إشعار التأكيد النهائي لاعتماد العقد (أو DHCPNAK في حال بطلان العرض).</li>
+            </ol>
+          </li>
+          <li>رسائل <span class="en-term">DHCPv6</span> المناظرة هي: SOLICIT و ADVERTISE و INFORMATION REQUEST و REPLY (ولا يمنح عنوان البوابة الافتراضية؛ حيث يؤخذ من الراوتر).</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>5. خدمات مشاركة الملفات: FTP و SMB</h2>
+        <ul>
+          <li><strong>FTP (File Transfer Protocol):</strong> يستخدم اتصالين منفصلين عبر TCP:
+            <ul>
+              <li><strong>اتصال التحكم (<span class="en-term">Control Connection</span>):</strong> على منفذ <strong>TCP 21</strong> للأوامر والردود.</li>
+              <li><strong>اتصال البيانات (<span class="en-term">Data Connection</span>):</strong> على منفذ <strong>TCP 20</strong> لنقل الملفات الفعلية (يفتح مع كل عملية نقل).</li>
+            </ul>
+          </li>
+          <li><strong>SMB (Server Message Block):</strong> بروتوكول لمشاركة الملفات والطابعات والرسائل بين الأجهزة. يتميز عن FTP بأنه ينشئ اتصالات طويلة الأمد (<span class="en-term">Long-term connection</span>)، تتيح للعميل تصفح ملفات الخادم كأنها قرص تخزين محلي على جهازه.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- TAB 4: INTERACTIVE QUIZ & ERROR DIAGNOSTICS -->
+    <div id="quiz" class="tab-content">
+      <div class="card">
+        <h2>Interactive Quiz & Error Diagnostics</h2>
+       
+        
+        <div class="quiz-controls">
+          <button class="reset-btn" onclick="resetQuiz()">Reset All Questions</button>
+          <div class="score-banner" id="scoreDisplay">Score: 0 / 0 Solved</div>
+        </div>
+
+        <div id="quizContainer"></div>
+      </div>
+    </div>
+
+    <!-- TAB 5: COMPLETE SHEETS SOLUTIONS -->
+    <div id="solutions" class="tab-content">
+      <div class="card">
+        <h2>Complete Sheets Solutions & Explanations</h2>
+     
+        <h3>Sheet 1 Solutions: Introduction & Topologies</h3>
+        <div class="solution-item">
+          <div class="solution-q">Q1 (Essay): Explain the five fundamental components of a data communications system.</div>
+          <div class="solution-ans">
+            <strong>الحل والشرح:</strong> يتكون النظام من 5 عناصر أساسية:<br>
+            1. <strong>Message (الرسالة):</strong> وهي البيانات والمعلومات المراد إرسالها (نصوص، صور، فيديو، إلخ).<br>
+            2. <strong>Sender (المرسل):</strong> الجهاز الذي ينشئ ويرسل الرسالة (مثل الكمبيوتر أو محطة العمل).<br>
+            3. <strong>Receiver (المستقبل):</strong> الجهاز الذي يستقبل الرسالة (مثل الكمبيوتر أو الهاتف).<br>
+            4. <strong>Transmission Medium (وسط الإرسال):</strong> المسار المادي الذي تسلكه الرسالة (كابلات مجدولة، ألياف ضوئية، إلخ).<br>
+            5. <strong>Protocol (البروتوكول):</strong> مجموعة القواعد الرسمية التي تحكم وتنظم عملية نقل البيانات والتوافق بين الطرفين.
+          </div>
+        </div>
+
+        <div class="solution-item">
+          <div class="solution-q">Q2 (Essay): Compare and contrast Hubs, Switches, and Routers in computer networks.</div>
+          <div class="solution-ans">
+            <strong>الحل والشرح:</strong><br>
+            • <strong>Hub:</strong> يعمل في Layer 1 (Physical)، يكرر الإشارة ويبثها لجميع المنافذ دون أي فلترة أو عناوين، ويعمل بنمط Half-Duplex، ويشترك في نطاق تصادم واحد ونطاق بث واحد.<br>
+            • <strong>Switch:</strong> يعمل في Layer 2 (Data Link)، يوجه البيانات باستخدام جدول عناوين الماك (MAC Address Table) للمنفذ المقصود فقط، ويدعم Full-Duplex، وكل منفذ يمثل نطاق تصادم مستقل، بينما يمثل نطاق بث واحد.<br>
+            • <strong>Router:</strong> يعمل في Layer 3 (Network)، يوجه الحزم بين شبكات مختلفة باستخدام عناوين IP وبروتوكولات التوجيه، ويعزل ويقسم نطاقات البث (Broadcast Domains) بالكامل.
+          </div>
+        </div>
+
+        <div class="solution-item">
+          <div class="solution-q">Q3 (Essay): Describe Star Topology and Mesh Topology, highlighting advantages and disadvantages.</div>
+          <div class="solution-ans">
+            <strong>الحل والشرح:</strong><br>
+            • <strong>Star Topology:</strong> تتصل جميع الأجهزة بمحول مركزي Switch. <em>المميزات:</em> سهولة التركيب وعزل الأعطال؛ فتعطل أي جهاز لا يوقف البقية. <em>العيوب:</em> وجود نقطة فشل مركزية (تعطل السويتش يسقط الشبكة بالكامل)، وتتطلب كابلات كثيرة.<br>
+            • <strong>Mesh Topology:</strong> تتصل الأجهزة بروابط متعددة ومباشرة بين كل جهاز والآخر. <em>المميزات:</em> توفر أعلى درجات الاعتمادية والاحتياطية (Redundancy) وتحمل الأعطال (Fault Tolerance). <em>العيوب:</em> مكلفة جداً وتعقيد هائل في التوصيل وتوزيع الكابلات.
+          </div>
+        </div>
+
+        <div class="solution-item">
+          <div class="solution-q">Q4 (Essay): Categorize networks based on geographical coverage into LAN, MAN, and WAN.</div>
+          <div class="solution-ans">
+            <strong>الحل والشرح:</strong><br>
+            • <strong>LAN (Local Area Network):</strong> تغطي نطاقاً جغرافياً صغيراً ومحدوداً مثل غرفة أو مكتب أو مبنى، وتُستخدم لمشاركة الموارد المحلية.<br>
+            • <strong>MAN (Metropolitan Area Network):</strong> تغطي نطاقاً متوسطاً مثل مدينة أو بلدة وتربط شبكات LAN متعددة.<br>
+            • <strong>WAN (Wide Area Network):</strong> تغطي مساحات شاسعة جداً مثل دولة أو قارة أو العالم بأسره (مثل الإنترنت وشبكات شركات الاتصالات).
+          </div>
+        </div>
+
+        <div class="solution-item">
+          <div class="solution-q">Q5 (Essay): Compare Packet Filtering Firewalls and Stateful Inspection Firewalls.</div>
+          <div class="solution-ans">
+            <strong>الحل والشرح:</strong><br>
+            • <strong>Packet Filtering:</strong> تفحص الحزم في الطبقة 3 و 4 عبر مقارنة عناوين IP والمنافذ بقائمة التحكم (ACL) دون معرفة حالة الجلسة السابقة؛ ولذلك هي غير واعية بسياق الاتصال (Stateless) ومستوى أمانها منخفض.<br>
+            • <strong>Stateful Inspection:</strong> تفحص الحزم مع الاحتفاظ بجدول المحادثات النشطة (Conversation List) لتربط بين الحزم وتتأكد من أن كل حزمة واردة هي رد شرعي على طلب تم إنشاؤه مسبقاً من الداخل، مما يجعلها أكثر أماناً.
+          </div>
+        </div>
+
+        <h3>Sheet 2 Solutions: OSI Model & Hop Tracing Problem</h3>
+        <div class="solution-item">
+          <div class="solution-q">Part B - Essay Questions Solutions</div>
+          <div class="solution-ans">
+            1. <strong>Benefits of OSI Model:</strong> توحيد المعايير بين المصنعين، وإتاحة توافق البرمجيات والأجهزة المختلفة، ومنع تأثير تعديل أي طبقة على الطبقات الأخرى، وتسهيل تعلم الشبكات وتقسيم وظائفها.<br>
+            2. <strong>Responsibilities of Transport Layer:</strong> إنشاء وإدارة وإنهاء الاتصال، تقطيع البيانات (Segmentation) وتجميعها، الترقيم التسلسلي (Sequencing)، التحكم في التدفق (Flow Control)، واكتشاف وتصحيح الأخطاء من النهاية للنهاية.<br>
+            3. <strong>Logical vs Physical Addressing:</strong> العنوان المنطقي (IP) في الطبقة 3 يمثل العنوان العالمي الثابت للوصول للهدف النهائي، بينما العنوان الفيزيائي (MAC) في الطبقة 2 يمثل العنوان المادي المحلي المدمج بكارت الشبكة ويستخدم للربط بين جهازين في نفس الرابط المحلي.
+          </div>
+        </div>
+
+        <div class="solution-item">
+          <div class="solution-q">Part C - Hop-by-Hop Address Tracing Problem (A to D, and D to F)</div>
+          <div class="solution-ans">
+            <strong>بيانات الأجهزة:</strong> A(192.168.10.10, AAA) - B(192.168.10.1, BBB) - C(192.168.20.1, CCC) - D(192.168.20.20, DDD) - E(192.168.30.1, EEE) - F(192.168.40.1, FFF).<br><br>
+            <strong>أولاً: مسار الرسالة من Device A إلى Device D:</strong>
+            <table>
+              <tr><th>القفزة (Hop)</th><th>Source IP</th><th>Destination IP</th><th>Source MAC</th><th>Destination MAC</th></tr>
+              <tr><td>Hop 1 ($A \rightarrow B$)</td><td>192.168.10.10</td><td>192.168.20.20</td><td>AAA</td><td>BBB</td></tr>
+              <tr><td>Hop 2 ($B \rightarrow C$)</td><td>192.168.10.10</td><td>192.168.20.20</td><td>BBB</td><td>CCC</td></tr>
+              <tr><td>Hop 3 ($C \rightarrow D$)</td><td>192.168.10.10</td><td>192.168.20.20</td><td>CCC</td><td>DDD</td></tr>
+            </table>
+            <em>ملاحظة:</em> نلاحظ بقاء Source IP و Destination IP ثابتين تماماً في كل القفزات، بينما تتغير عناوين MAC عند كل قفزة.<br><br>
+            <strong>ثانياً: مسار الرسالة من Device D إلى Device F (مع شرح دور ARP):</strong><br>
+            • <strong>شرح دور ARP:</strong> عندما يريد D إرسال حزمة إلى F (وهو في شبكة أخرى)، يعلم D أنه يجب أن يرسلها أولاً للـ Default Gateway الخاص به (الراوتر C). يقوم D ببث رسالة <span class="en-term">ARP Request</span>: "من يملك عنوان IP 192.168.20.1؟"، فيرد الراوتر C برسالة <span class="en-term">ARP Reply</span> بعنوان الماك الفيزيائي الخاص به (CCC). ويتكرر هذا الاستعلام في كل قفزة لحل عنوان MAC التالي.
+            <table>
+              <tr><th>القفزة (Hop)</th><th>Source IP</th><th>Destination IP</th><th>Source MAC</th><th>Destination MAC</th></tr>
+              <tr><td>Hop 1 ($D \rightarrow C$)</td><td>192.168.20.20</td><td>192.168.40.1</td><td>DDD</td><td>CCC</td></tr>
+              <tr><td>Hop 2 ($C \rightarrow B$)</td><td>192.168.20.20</td><td>192.168.40.1</td><td>CCC</td><td>BBB</td></tr>
+              <tr><td>Hop 3 ($B \rightarrow E$)</td><td>192.168.20.20</td><td>192.168.40.1</td><td>BBB</td><td>EEE</td></tr>
+              <tr><td>Hop 4 ($E \rightarrow F$)</td><td>192.168.20.20</td><td>192.168.40.1</td><td>EEE</td><td>FFF</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <h3>Sheet 3 Solutions: Application Layer & Protocols</h3>
+        <div class="solution-item">
+          <div class="solution-q">Part B & C - Essay & Comparison Solutions</div>
+          <div class="solution-ans">
+            • <strong>Role of Application Layer:</strong> توفير واجهة التخاطب بين البرامج والتطبيقات التي نستخدمها وشبكة نقل البيانات التي تنقل الرسائل من خلالها.<br>
+            • <strong>DHCP 4 Steps (DORA Process):</strong><br>
+            1. <em>DHCPDISCOVER:</em> يبث العميل رسالة للبحث عن أي خادم DHCP متاح.<br>
+            2. <em>DHCPOFFER:</em> يقدم الخادم عرض إيجار بعنوان IP وإعدادات الشبكة.<br>
+            3. <em>DHCPREQUEST:</em> يرسل العميل طلباً يحدد فيه قبوله لعقد هذا الخادم المحدد.<br>
+            4. <em>DHCPACK:</em> يرسل الخادم إشعار التأكيد النهائي لبدء استخدام العنوان.<br>
+            • <strong>Three Functions of SMB:</strong> (1) بدء الجلسات والمصادقة وإنهائها، (2) التحكم في الوصول للملفات ومشاركة الطابعات، (3) السماح للتطبيقات بتبادل الرسائل عبر الشبكة.<br>
+            • <strong>Client/Server vs P2P:</strong> في Client/Server تخزن الموارد في خادم مركزي يطلب منه العملاء البيانات، بينما في شبكات الند للند (P2P) تتشارك الأجهزة الموارد بالتساوي ويعمل كل جهاز كعميل وخادم في نفس الوقت دون الحاجة لخادم مركزي.
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    const quizQuestions = [
+      // Sheet 1
+      {
+        tag: "Sheet 1: Fundamentals",
+        q: "What are the five components of a data communications system?",
+        options: [
+          "Sender, Receiver, Message, Medium, Protocol",
+          "Sender, Router, Switch, Medium, Protocol",
+          "Client, Server, Hub, Cable, Protocol",
+          "Sender, Receiver, Packet, Port, Address"
+        ],
+        correct: 0,
+        explanation: "يتكون نظام الاتصال من 5 عناصر حتمية: الرسالة (Message)، المرسل (Sender)، المستقبل (Receiver)، وسط الإرسال (Medium)، والبروتوكول (Protocol) الحاكم لقواعد الاتصال."
+      },
+      {
+        tag: "Sheet 1: Data Flow",
+        q: "Which type of data flow allows transmission in both directions simultaneously?",
+        options: [
+          "Simplex",
+          "Half-duplex",
+          "Full-duplex",
+          "Multipoint"
+        ],
+        correct: 2,
+        explanation: "نمط الـ Full-duplex يتيح الإرسال والاستقبال في كلا الاتجاهين في نفس اللحظة بالتزامن (مثل شبكات الهاتف)، بينما Simplex باتجاه واحد فقط، و Half-duplex بالتناوب."
+      },
+      {
+        tag: "Sheet 1: Hardware",
+        q: "Which network device operates at Layer 1 (Physical Layer) and broadcasts data to all ports without filtering?",
+        options: [
+          "Router",
+          "Switch",
+          "Hub",
+          "Firewall"
+        ],
+        correct: 2,
+        explanation: "جهاز الـ Hub يعمل في الطبقة الأولى (Layer 1) كمكرر إشارة كهربائي، ويبث البيانات القادمة إليه لجميع المنافذ دون أي فلترة أو قراءة لعناوين الماك."
+      },
+      {
+        tag: "Sheet 1: Hardware",
+        q: "Which network device operates at Layer 2 (Data Link Layer) and uses a MAC address table to forward data?",
+        options: [
+          "Hub",
+          "Switch",
+          "Repeater",
+          "Router"
+        ],
+        correct: 1,
+        explanation: "الـ Switch يعمل في الطبقة الثانية (Layer 2) ويبني جدول عناوين الـ MAC ليوجه الإطارات إلى المنفذ الصحيح فقط بنمط Full-Duplex."
+      },
+      {
+        tag: "Sheet 1: Hardware",
+        q: "Which device operates at Layer 3 (Network Layer) and routes data between different networks using IP addresses?",
+        options: [
+          "Switch",
+          "Hub",
+          "Router",
+          "Bridge"
+        ],
+        correct: 2,
+        explanation: "الـ Router يعمل في الطبقة الثالثة (Layer 3) ومسؤوليته توجيه حزم البيانات بين شبكات مختلفة بالاعتماد على عناوين IP وجداول التوجيه."
+      },
+      {
+        tag: "Sheet 1: Topologies",
+        q: "In which network topology do all devices connect to a central managed switch, making it the most common LAN design?",
+        options: [
+          "Bus Topology",
+          "Ring Topology",
+          "Star Topology",
+          "Mesh Topology"
+        ],
+        correct: 2,
+        explanation: "طوبولوجيا الـ Star Topology تتصل فيها جميع الأجهزة بمحول مركزي، وتعتبر التصميم القياسي والأكثر انتشاراً في الشبكات المحلية (LAN)."
+      },
+      {
+        tag: "Sheet 1: Topologies",
+        q: "Which topology provides maximum redundancy and fault tolerance by connecting every device to every other device?",
+        options: [
+          "Mesh Topology",
+          "Bus Topology",
+          "Star Topology",
+          "Ring Topology"
+        ],
+        correct: 0,
+        explanation: "طوبولوجيا الـ Mesh توفر مسارات متعددة وربطاً كاملاً بين الأجهزة، مما يحقق أعلى درجات الاحتياطية (Redundancy) وتحمل الأعطال."
+      },
+      {
+        tag: "Sheet 1: Topologies",
+        q: "What is a key characteristic of Bus Topology?",
+        options: [
+          "Centralized switch control",
+          "Devices share a single backbone cable",
+          "Closed circular loop for data flow",
+          "Full duplex communication on every port"
+        ],
+        correct: 1,
+        explanation: "في الـ Bus Topology تتصل جميع المحطات بكابل محوري رئيسي مشترك (Backbone)، وانقطاعه يؤدي لتعطل الشبكة بالكامل."
+      },
+      {
+        tag: "Sheet 1: Scales",
+        q: "Which category of network covers a town or a city?",
+        options: [
+          "LAN",
+          "MAN",
+          "WAN",
+          "PAN"
+        ],
+        correct: 1,
+        explanation: "شبكة الـ MAN (Metropolitan Area Network) مخصصة لتغطية مدينة أو بلدة كاملة وربط شبكات LAN المتعددة الموجودة فيها."
+      },
+      {
+        tag: "Sheet 1: Security",
+        q: "Which firewall type inspects individual packets based on header information like source IP, destination IP, and port numbers using an Access Control List (ACL)?",
+        options: [
+          "Packet Filtering Firewall",
+          "Web Application Firewall",
+          "Proxy Firewall",
+          "Stateful Inspection Firewall"
+        ],
+        correct: 0,
+        explanation: "جدار الحماية من نوع Packet Filtering يفحص ترويسة الحزمة فقط (عناوين IP وأرقام المنافذ) مقابل جدول الصلاحيات ACL دون تتبع حالة الاتصال."
+      },
+      {
+        tag: "Sheet 1: Security",
+        q: "What is the primary function of a Web Application Firewall (WAF)?",
+        options: [
+          "Routing packets between WAN and LAN",
+          "Protecting web servers at the application layer by filtering HTTP/HTTPS traffic",
+          "Repeating electrical signals at Layer 1",
+          "Assigning dynamic IP addresses to hosts"
+        ],
+        correct: 1,
+        explanation: "يعمل الـ WAF في طبقة التطبيقات (Layer 7) لحماية خوادم الويب من خلال فحص وفلترة ترافيك الـ HTTP/HTTPS والتصدي للهجمات الإلكترونية."
+      },
+      {
+        tag: "Sheet 1: Real-World Example",
+        q: "Walkie-talkies are a classic real-world example of which data flow mode?",
+        options: [
+          "Simplex",
+          "Half-duplex",
+          "Full-duplex",
+          "Multipoint"
+        ],
+        correct: 1,
+        explanation: "أجهزة اللاسلكي Walkie-talkies مثال كلاسيكي على Half-duplex لأنها تتيح الإرسال والاستقبال ولكن ليس في نفس اللحظة (بالتناوب)."
+      },
+      {
+        tag: "Sheet 1: Links",
+        q: "In a point-to-point connection:",
+        options: [
+          "More than two devices share a single link",
+          "A dedicated link connects two devices exclusively",
+          "Data is broadcasted to all active nodes",
+          "No protocols are required"
+        ],
+        correct: 1,
+        explanation: "اتصال Point-to-point يوفر رابطاً مخصصاً ومحجوزاً بالكامل لتبادل البيانات بين جهازين اثنين فقط دون مشاركة."
+      },
+      {
+        tag: "Sheet 1: Security",
+        q: "Which firewall type maintains a conversation list to keep track of active connections and offers more security than basic packet filtering?",
+        options: [
+          "Packet Filtering Firewall",
+          "Stateful Inspection Firewall",
+          "Hub-based Firewall",
+          "Layer 1 Firewall"
+        ],
+        correct: 1,
+        explanation: "الـ Stateful Inspection يحتفظ بسجل المحادثات النشطة (Conversation list) ليتأكد من أن الحزم القادمة هي ردود على طلبات شرعية صادرة."
+      },
+      {
+        tag: "Sheet 1: Definition",
+        q: "What is the primary role of a network protocol in data communications?",
+        options: [
+          "To physically amplify electrical signals over long cable distances",
+          "To provide a standardized set of rules that govern how data is formatted, transmitted, and received",
+          "To route packets dynamically between different internet service providers",
+          "To block unauthorized web application traffic and cyber threats"
+        ],
+        correct: 1,
+        explanation: "البروتوكول يُعرّف علمياً بأنه مجموعة القواعد المنظمة لطريقة تمثيل وتنسيق ونقل واستقبال البيانات لضمان توافق الأجهزة."
+      },
+
+      // Sheet 2
+      {
+        tag: "Sheet 2: OSI Architecture",
+        q: "Which layer of the OSI model is responsible for logical addressing and routing?",
+        options: [
+          "Physical Layer",
+          "Data Link Layer",
+          "Network Layer",
+          "Transport Layer"
+        ],
+        correct: 2,
+        explanation: "الطبقة الثالثة Network Layer هي المسؤولة عن العنونة المنطقية (IP Addressing) والتوجيه (Routing) لاختيار أفضل مسار."
+      },
+      {
+        tag: "Sheet 2: PDUs",
+        q: "What is the data unit processed at the Transport Layer?",
+        options: [
+          "Bits",
+          "Frames",
+          "Packets",
+          "Segments"
+        ],
+        correct: 3,
+        explanation: "وحدة البيانات (PDU) في طبقة النقل تسمى Segment، بينما في Network تسمى Packet، وفي Data Link تسمى Frame، وفي Physical تسمى Bits."
+      },
+      {
+        tag: "Sheet 2: Protocols",
+        q: "Which protocol operates at the Transport Layer and provides connection-oriented transmission?",
+        options: [
+          "UDP",
+          "TCP",
+          "IP",
+          "FTP"
+        ],
+        correct: 1,
+        explanation: "بروتوكول TCP يوفر اتصالاً موجهاً وموثوقاً (Connection-oriented, reliable)، بينما UDP غير موجه ولا يقدم تأكيد استلام (Connectionless)."
+      },
+      {
+        tag: "Sheet 2: Addressing",
+        q: "The MAC address (Physical Address) is utilized at which OSI layer?",
+        options: [
+          "Physical Layer",
+          "Data Link Layer",
+          "Network Layer",
+          "Session Layer"
+        ],
+        correct: 1,
+        explanation: "عنوان الماك (MAC Address) هو العنوان الفيزيائي المستخدم في الطبقة الثانية Data Link Layer لتسليم الإطارات محلياً."
+      },
+      {
+        tag: "Sheet 2: Addressing",
+        q: "How many bits make up a standard MAC address as shown in the lecture?",
+        options: [
+          "16 bits",
+          "32 bits",
+          "48 bits",
+          "64 bits"
+        ],
+        correct: 2,
+        explanation: "يتكون عنوان الـ MAC من 48 بت (48 bits)، ويكتب في 12 رقماً بنظام السداسي عشر (Hexadecimal) مدمجاً في كارت الـ NIC."
+      },
+      {
+        tag: "Sheet 2: OSI Layers",
+        q: "Which layer of the OSI model handles translation, encryption, and compression of data?",
+        options: [
+          "Application Layer",
+          "Presentation Layer",
+          "Session Layer",
+          "Transport Layer"
+        ],
+        correct: 1,
+        explanation: "الطبقة السادسة Presentation Layer هي المسؤولة عن ترجمة البيانات وضغطها وتشفيرها وفك تشفيرها (مثل بروتوكول SSL/TLS وتنسيق ASCII)."
+      },
+      {
+        tag: "Sheet 2: Physical Layer",
+        q: "What are the physical components or properties handled by the Physical Layer?",
+        options: [
+          "Cable type, cable length, and voltage levels",
+          "MAC addresses and framing",
+          "Logical addressing and routing",
+          "Session establishment and termination"
+        ],
+        correct: 0,
+        explanation: "الطبقة الفيزيائية مسؤولة عن كافة الخصائص المادية مثل: نوع الكابل وطوله، معدل البتات، مستويات الجهد الكهربائي، والواجهات الفيزيائية."
+      },
+      {
+        tag: "Sheet 2: Error Detection",
+        q: "In Parity Checking, what is the parity bit value if the number of 1s in a stream of bits is even?",
+        options: [
+          "1",
+          "0",
+          "-1",
+          "Depends on the port number"
+        ],
+        correct: 1,
+        explanation: "في فحص التكافؤ الزوجي (Even Parity) بالمحاضرة: إذا كان عدد الآحاد زوجياً تصبح قيمة بت التكافؤ 0، أما إذا كان فردياً فتصبح 1."
+      },
+      {
+        tag: "Sheet 2: Routing",
+        q: "Which routing protocols are mentioned in the network layer for choosing the best path?",
+        options: [
+          "TCP and UDP",
+          "SMTP and POP3",
+          "RIP and OSPF",
+          "HTTP and FTP"
+        ],
+        correct: 2,
+        explanation: "بروتوكولات التوجيه المذكورة في المحاضرة لاختيار أفضل مسار في طبقة الشبكة هي RIP (Routing Information Protocol) و OSPF."
+      },
+      {
+        tag: "Sheet 2: Address Tracing",
+        q: "When a packet travels across routers from Host A to Host D, how do IP and MAC addresses behave?",
+        options: [
+          "Source and Destination IP remain unchanged; MAC addresses change at each hop",
+          "Source and Destination MAC remain unchanged; IP addresses change at each hop",
+          "Both IP and MAC addresses change at every single hop",
+          "Neither IP nor MAC addresses ever change"
+        ],
+        correct: 0,
+        explanation: "عناوين IP تظل ثابتة طوال الرحلة لضمان الوصول للوجهة النهائية، بينما عناوين MAC تتغير عند كل قفزة راوتر لتحديد الرابط الفيزيائي المحلي."
+      },
+
+      // Sheet 3
+      {
+        tag: "Sheet 3: Model Mapping",
+        q: "Which layers of the OSI model define functions incorporated into the TCP/IP application layer?",
+        options: [
+          "Network, Data Link, Physical",
+          "Transport, Network, Data Link",
+          "Application, Presentation, Session",
+          "Session, Transport, Network"
+        ],
+        correct: 2,
+        explanation: "طبقة التطبيقات في نموذج TCP/IP تجمع وظائف الطبقات الثلاث العليا من نموذج OSI: طبقة Application و Presentation و Session."
+      },
+      {
+        tag: "Sheet 3: DNS",
+        q: "Which protocol is primarily used to translate domain names (like cisco.com) into numeric IP addresses?",
+        options: [
+          "HTTP",
+          "DHCP",
+          "DNS",
+          "SMTP"
+        ],
+        correct: 2,
+        explanation: "بروتوكول DNS (Domain Name System) مسؤول عن ترجمة أسماء النطاقات السهلة إلى عناوين IP رقمية تفهمها أجهزة الشبكة."
+      },
+      {
+        tag: "Sheet 3: FTP",
+        q: "What is the TCP port used by an FTP server for control traffic (Control Connection)?",
+        options: [
+          "20",
+          "21",
+          "80",
+          "110"
+        ],
+        correct: 1,
+        explanation: "يستخدم خادم FTP المنفذ 21 لاتصال التحكم (الأوامر والردود)، بينما يستخدم المنفذ 20 لنقل ملفات البيانات الفعلية."
+      },
+      {
+        tag: "Sheet 3: DHCP",
+        q: "Which DHCP message does a client initially broadcast on the network to identify available DHCP servers?",
+        options: [
+          "DHCPOFFER",
+          "DHCPREQUEST",
+          "DHCPDISCOVER",
+          "DHCPACK"
+        ],
+        correct: 2,
+        explanation: "تبدأ عملية الـ DHCP بقيام العميل ببث رسالة DHCPDISCOVER للبحث عن أي خادم متاح على الشبكة المحلية."
+      },
+      {
+        tag: "Sheet 3: HTTP",
+        q: "What type of HTTP message does a web browser send to request an HTML page from a server?",
+        options: [
+          "POST",
+          "PUT",
+          "GET",
+          "PUSH"
+        ],
+        correct: 2,
+        explanation: "يرسل متصفح الويب رسالة HTTP GET لطلب واسترجاع صفحات الـ HTML ومحتوياتها من السيرفر."
+      },
+      {
+        tag: "Sheet 3: Email",
+        q: "Which protocol is specifically used to send email between clients and servers or between servers?",
+        options: [
+          "POP3",
+          "IMAP",
+          "SMTP",
+          "DNS"
+        ],
+        correct: 2,
+        explanation: "بروتوكول SMTP (Simple Mail Transfer Protocol) على منفذ TCP 25 مخصص حصرياً لإرسال وتمرير رسائل البريد الإلكتروني."
+      },
+      {
+        tag: "Sheet 3: Email",
+        q: "What is a key feature of the IMAP protocol compared to POP3 when retrieving email?",
+        options: [
+          "It automatically deletes messages from the server once downloaded",
+          "Copies of messages are downloaded to the client while original messages are kept on the server until manually deleted",
+          "It operates strictly on port 110",
+          "It does not allow users to read emails offline"
+        ],
+        correct: 1,
+        explanation: "يحتفظ IMAP بالرسائل الأصلية على الخادم ويزامن التعديلات عبر مختلف أجهزة المستخدم، بينما POP3 يحذف الرسالة من الخادم بمجرد تحميلها."
+      },
+      {
+        tag: "Sheet 3: Architecture",
+        q: "In a peer-to-peer (P2P) network, how does a connected end device (peer) function?",
+        options: [
+          "It functions exclusively as a server",
+          "It functions exclusively as a client",
+          "It can function as both a client and a server simultaneously or on a per-request basis",
+          "It requires a dedicated central server to manage all transactions"
+        ],
+        correct: 2,
+        explanation: "في شبكات الند للند (P2P)، يستطيع كل جهاز متصل أن يعمل كخادم وعميل في نفس الوقت وبحسب كل طلب دون الحاجة لخادم مركزي مخصص."
+      },
+      {
+        tag: "Sheet 3: Utilities",
+        q: "Which operating system utility allows a user to manually query DNS servers to resolve a given host name?",
+        options: [
+          "ping",
+          "traceroute",
+          "nslookup",
+          "ipconfig"
+        ],
+        correct: 2,
+        explanation: "أمر nslookup يتيح الاستعلام يدوياً عن سيرفر الـ DNS الافتراضي واختبار دقة ترجمة أسماء النطاقات إلى عناوين IP."
+      },
+      {
+        tag: "Sheet 3: File Sharing",
+        q: "What is a key difference between SMB and FTP?",
+        options: [
+          "SMB is connectionless while FTP is connection-oriented",
+          "SMB establishes long-term persistent connections allowing remote shares to be accessed like local drives",
+          "FTP does not use TCP",
+          "SMB operates only at Layer 1"
+        ],
+        correct: 1,
+        explanation: "بروتوكول SMB ينشئ اتصالات طويلة الأمد تتيح للمستخدم الوصول لموارد وملفات الخادم المشتركة والتعامل معها وكأنها قرص محلي على جهازه."
+      }
+    ];
+
+    function renderQuiz() {
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = '';
+
+      quizQuestions.forEach((item, index) => {
+        const box = document.createElement('div');
+        box.className = 'question-box';
+        box.id = `qbox-${index}`;
+
+        let optsHtml = '';
+        item.options.forEach((opt, optIndex) => {
+          optsHtml += `
+            <label class="option-label" id="label-${index}-${optIndex}">
+              <input type="radio" name="q-${index}" value="${optIndex}">
+              <span>${opt}</span>
+            </label>
+          `;
+        });
+
+        box.innerHTML = `
+          <div class="question-header">
+            <span class="tag">${item.tag}</span>
+            <span style="font-size:0.85rem; color:var(--text-muted); direction:ltr;">Question ${index + 1} of ${quizQuestions.length}</span>
+          </div>
+          <div class="question-title">${item.q}</div>
+          <div class="options">${optsHtml}</div>
+          <button class="btn-submit" onclick="validateAnswer(${index})">Check Answer</button>
+          <div class="feedback" id="feedback-${index}"></div>
+        `;
+
+        container.appendChild(box);
+      });
+      updateScore();
+    }
+
+    function validateAnswer(idx) {
+      const selected = document.querySelector(`input[name="q-${idx}"]:checked`);
+      const feedback = document.getElementById(`feedback-${idx}`);
+      const question = quizQuestions[idx];
+
+      if (!selected) {
+        feedback.className = 'feedback incorrect';
+        feedback.innerHTML = '<strong>تنبيه:</strong> يرجى اختيار إجابة أولاً قبل التحقق!';
+        feedback.style.display = 'block';
+        return;
+      }
+
+      const selectedVal = parseInt(selected.value);
+
+      // Reset style of all options for this question
+      question.options.forEach((_, optIdx) => {
+        const lbl = document.getElementById(`label-${idx}-${optIdx}`);
+        lbl.style.borderColor = 'var(--border)';
+        lbl.style.background = '#ffffff';
+      });
+
+      const selectedLabel = document.getElementById(`label-${idx}-${selectedVal}`);
+      const correctLabel = document.getElementById(`label-${idx}-${question.correct}`);
+
+      if (selectedVal === question.correct) {
+        feedback.className = 'feedback correct';
+        feedback.innerHTML = `<strong>إجابة صحيحة وممتازة! ✔️</strong><br>${question.explanation}`;
+        selectedLabel.style.borderColor = 'var(--correct-border)';
+        selectedLabel.style.background = 'var(--correct-bg)';
+      } else {
+        feedback.className = 'feedback incorrect';
+        feedback.innerHTML = `<strong>إجابة خاطئة! ❌</strong><br>الإجابة الصحيحة هي: <span style="direction:ltr; display:inline-block; font-weight:bold;">"${question.options[question.correct]}"</span>.<br><br><strong>سبب الخطأ والتوضيح العلمي:</strong> ${question.explanation}`;
+        selectedLabel.style.borderColor = 'var(--wrong-border)';
+        selectedLabel.style.background = 'var(--wrong-bg)';
+        correctLabel.style.borderColor = 'var(--correct-border)';
+      }
+      feedback.style.display = 'block';
+      updateScore();
+    }
+
+    function updateScore() {
+      let correctAnswers = 0;
+      quizQuestions.forEach((q, i) => {
+        const sel = document.querySelector(`input[name="q-${i}"]:checked`);
+        if (sel && parseInt(sel.value) === q.correct) {
+          correctAnswers++;
+        }
+      });
+      document.getElementById('scoreDisplay').textContent = `Score: ${correctAnswers} / ${quizQuestions.length} Solved`;
+    }
+
+    function resetQuiz() {
+      renderQuiz();
+    }
+
+    window.onload = function() {
+      renderQuiz();
+    };
+  </script>
+</body>
+</html>
